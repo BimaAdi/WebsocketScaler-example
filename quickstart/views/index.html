@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebsocketScaler Chat</title>
+</head>
+<body>
+    <h1>WebsocketScaler Chat</h1>
+    <ul id="chats"></ul>
+    <input type="text" id="chat_input">
+    <button onclick="sendChat()">send</button>
+    <script>
+        let chats = []
+        let socket = new WebSocket("ws://localhost:3000/ws/");
+        const sendChat = () => {
+            let chat_input = document.getElementById("chat_input")
+            socket.send(chat_input.value)
+            chat_input.value = ''
+        }
+        const renderChat = (chats) => {
+            let ulChats = document.getElementById("chats")
+            ulChats.innerHTML = chats.map(x => "<li>" + x + "</li>").join("")
+        }
+
+        socket.onmessage = function(event) {
+            chats.push(event.data);
+            renderChat(chats);
+        };
+
+        socket.onerror = function(error) {
+            console.error('[error]');
+        };
+    </script>
+</body>
+</html>
